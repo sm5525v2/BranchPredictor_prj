@@ -13,6 +13,7 @@
 #include "trace.h"
 #include "predictor.h"
 #include "my_predictor.h"
+// #include "batage_predictor.h"
 
 int main (int argc, char *argv[]) {
 
