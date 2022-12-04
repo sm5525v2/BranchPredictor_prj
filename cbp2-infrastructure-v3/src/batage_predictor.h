@@ -11,6 +11,9 @@
 // Author: Pierre Michaud
 // Release 1, may 2018
 
+#ifndef BATAGE_PREDICTOR_H
+#define BATAGE_PREDICTOR_H
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -545,6 +548,8 @@ class batage {
   int * bank;
   bool * check;
 #endif
+
+  int curConfLevel;
  batage()
 {
   g = new tagged_entry * [NUMG];
@@ -642,13 +647,15 @@ predict(uint32_t pc, histories & p)
   s.push_back(dualcounter(b[bi],b2[bi2]));
 
   bp = 0;
+  curConfLevel = 0;
   for (int i=1; i<(int)s.size(); i++) {
     if (s[i].conflevel(meta) < s[bp].conflevel(meta)) {
       bp = i;
       //find lowest conflevel index
+      curConfLevel = s[i].conflevel(meta);
     }
   }
-  
+  // printf("%d",s[bp].conflevel(meta));
   //return prediction ( = n[1] > n[0]) of lowest confident level dual counter
   return s[bp].pred();
 }
@@ -766,37 +773,4 @@ size()
 }
 };
 
-
-class batage_update : public branch_update {
-public:
-    //add variable if need
-};
-
-class batage_predictor : public branch_predictor{
-
- private:
-
-  batage pred;
-  histories hist;
-
-  batage_update u; //predict.cc use branch_update to get result
-  long long int PC; //PC is need to predict and update batage, so store it in member variable and pass to pred.predict method
-
- public:
-  batage_predictor(void)
-  {
-    hist.printconfig();
-    printf("total bits = %d\n",pred.size()+hist.size());
-  }
-
-  branch_update* predict (branch_info & b) {
-      PC = b.address;
-      u.direction_prediction(pred.predict(PC, hist));
-      return &u;
-  }
-
-  void update (branch_update *u, bool taken, unsigned int target) {
-      pred.update(PC,taken,hist, false);
-      hist.update(target,taken);
-  }
-};
+#endif
