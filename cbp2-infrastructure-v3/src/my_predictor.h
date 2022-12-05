@@ -5,7 +5,7 @@
 
 
 #include "batage_predictor.h"
-// #include "hashed_perceptron_predictor.h"
+#include "hashed_perceptron_predictor.h"
 #include "chooser.h"
 
 class my_update : public branch_update {
@@ -22,7 +22,7 @@ class my_predictor : public branch_predictor{
   histories hist;
 
   //hashed_perceptron
-  //perceptron perceptron_pred
+  perceptron perceptron_pred;
 
   //chooser
   chooser chsr;
@@ -42,11 +42,11 @@ class my_predictor : public branch_predictor{
       PC = b.address;
     //   u.direction_prediction(batage_pred.predict(PC, hist));
 
-	  u.direction_prediction(chsr.predict(batage_pred, PC, hist));
+	  u.direction_prediction(chsr.choose(batage_pred, perceptron_pred, PC, hist, b));
 
 	  //bool pred_taken = chsr.predict(batage_pred, perceptron_pred, PC, hist);
 	  //u.direction_prediction(pred_taken);
-      return &u;
+    return &u;
   }
 
   void update (branch_update *u, bool taken, unsigned int target) {
@@ -54,8 +54,12 @@ class my_predictor : public branch_predictor{
 	  batage_pred.update(PC,taken,hist, false);
 
 	  //update hashed_perceptron
-	  //perceptron perceptron_pred.update()
+	  perceptron_pred.update(u, taken, target);
 
       hist.update(target,taken);
+  }
+
+  int getCurConfLevel() {
+    return batage_pred.curConfLevel;
   }
 };
