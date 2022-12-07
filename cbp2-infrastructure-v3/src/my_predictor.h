@@ -34,32 +34,23 @@ class my_predictor : public branch_predictor{
   my_predictor(void)
   {
 	//initialize batage and perectron
-    hist.printconfig();
-    printf("total bits = %d\n",batage_pred.size()+hist.size());
+    // hist.printconfig();
+    // printf("total bits = %d\n",batage_pred.size()+hist.size());
   }
 
-  branch_update* predict (branch_info & b) {
-      PC = b.address;
-    //   u.direction_prediction(batage_pred.predict(PC, hist));
-
+  branch_update* predict (branch_info & b) { 
+    PC = b.address;
 	  u.direction_prediction(chsr.choose(batage_pred, perceptron_pred, PC, hist, b));
 
-	  //bool pred_taken = chsr.predict(batage_pred, perceptron_pred, PC, hist);
-	  //u.direction_prediction(pred_taken);
     return &u;
   }
 
   void update (branch_update *u, bool taken, unsigned int target) {
       //update batage
 	  batage_pred.update(PC,taken,hist, false);
-
+    hist.update(target,taken);
 	  //update hashed_perceptron
 	  perceptron_pred.update(u, taken, target);
 
-      hist.update(target,taken);
-  }
-
-  int getCurConfLevel() {
-    return batage_pred.curConfLevel;
   }
 };

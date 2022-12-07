@@ -55,8 +55,8 @@
 #define PATHBITS 6
 #define LOGB 12
 #define LOGB2 10
-#define LOGG 7
-#define TAGBITS 12
+#define LOGG 10
+#define TAGBITS 18
 #define BHYSTBITS 2
 
 // SKIPMAX: maximum number of banks skipped on allocation
